@@ -6,23 +6,45 @@
     <title>Sverigeklockan</title>
     <style>
         body {
-            background-color: #4A3F35; /* Mörk beige */
-            color: #FFF8DC; /* Ljust gulaktig färg */
+            background-color: #3A2F28; /* Mörkare beige */
+            color: #FFFBEA; /* Ljusare gulaktig färg */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
+            position: relative;
         }
         #clock {
             font-size: 80vh;
             font-weight: bold;
+            z-index: 1;
+        }
+        .dots-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: space-between;
+            pointer-events: none;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
         }
     </style>
 </head>
 <body>
     <div id="clock"></div>
+    <div class="dots-container" id="dots"></div>
 
     <script>
         function updateClock() {
@@ -31,11 +53,42 @@
                 timeZone: 'Europe/Stockholm',
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit',
                 hour12: false
             };
             document.getElementById('clock').innerText = new Intl.DateTimeFormat('sv-SE', options).format(now);
+            updateDots(now.getSeconds());
         }
+
+        function updateDots(seconds) {
+            const dotsContainer = document.getElementById("dots");
+            dotsContainer.innerHTML = "";
+            const totalDots = 59; 
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            
+            for (let i = 0; i < seconds; i++) {
+                const dot = document.createElement("div");
+                dot.classList.add("dot");
+                let x, y;
+                if (i < totalDots / 4) {
+                    x = (i / (totalDots / 4)) * screenWidth;
+                    y = 0;
+                } else if (i < totalDots / 2) {
+                    x = screenWidth;
+                    y = ((i - totalDots / 4) / (totalDots / 4)) * screenHeight;
+                } else if (i < (3 * totalDots) / 4) {
+                    x = screenWidth - ((i - totalDots / 2) / (totalDots / 4)) * screenWidth;
+                    y = screenHeight;
+                } else {
+                    x = 0;
+                    y = screenHeight - ((i - (3 * totalDots) / 4) / (totalDots / 4)) * screenHeight;
+                }
+                dot.style.left = `${x}px`;
+                dot.style.top = `${y}px`;
+                dotsContainer.appendChild(dot);
+            }
+        }
+
         setInterval(updateClock, 1000);
         updateClock();
     </script>
