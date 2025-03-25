@@ -6,7 +6,7 @@
     <title>Sverigeklockan</title>
     <style>
         body {
-            background-color: #3A2F28; /* Mörkare beige */
+            background-color: #2E241E; /* Ännu mörkare beige */
             color: #FFFBEA; /* Ljusare gulaktig färg */
             display: flex;
             justify-content: center;
@@ -21,30 +21,20 @@
             font-weight: bold;
             z-index: 1;
         }
-        .dots-container {
+        .border-line {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: space-between;
-            pointer-events: none;
-        }
-        .dot {
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            position: absolute;
+            border: 5px solid transparent;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
     <div id="clock"></div>
-    <div class="dots-container" id="dots"></div>
+    <div class="border-line" id="border"></div>
 
     <script>
         function updateClock() {
@@ -56,36 +46,22 @@
                 hour12: false
             };
             document.getElementById('clock').innerText = new Intl.DateTimeFormat('sv-SE', options).format(now);
-            updateDots(now.getSeconds());
+            updateBorder(now.getSeconds());
         }
 
-        function updateDots(seconds) {
-            const dotsContainer = document.getElementById("dots");
-            dotsContainer.innerHTML = "";
-            const totalDots = 59; 
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
+        function updateBorder(seconds) {
+            const borderElement = document.getElementById("border");
+            const totalSegments = 60;
+            const percentage = (seconds / totalSegments) * 100;
             
-            for (let i = 0; i < seconds; i++) {
-                const dot = document.createElement("div");
-                dot.classList.add("dot");
-                let x, y;
-                if (i < totalDots / 4) {
-                    x = (i / (totalDots / 4)) * screenWidth;
-                    y = 0;
-                } else if (i < totalDots / 2) {
-                    x = screenWidth;
-                    y = ((i - totalDots / 4) / (totalDots / 4)) * screenHeight;
-                } else if (i < (3 * totalDots) / 4) {
-                    x = screenWidth - ((i - totalDots / 2) / (totalDots / 4)) * screenWidth;
-                    y = screenHeight;
-                } else {
-                    x = 0;
-                    y = screenHeight - ((i - (3 * totalDots) / 4) / (totalDots / 4)) * screenHeight;
-                }
-                dot.style.left = `${x}px`;
-                dot.style.top = `${y}px`;
-                dotsContainer.appendChild(dot);
+            if (seconds < 15) {
+                borderElement.style.borderImage = `linear-gradient(to right, #FFFBEA ${percentage}%, transparent ${percentage}%) 1`;
+            } else if (seconds < 30) {
+                borderElement.style.borderImage = `linear-gradient(to bottom, #FFFBEA ${percentage - 25}%, transparent ${percentage - 25}%) 1`;
+            } else if (seconds < 45) {
+                borderElement.style.borderImage = `linear-gradient(to left, #FFFBEA ${percentage - 50}%, transparent ${percentage - 50}%) 1`;
+            } else {
+                borderElement.style.borderImage = `linear-gradient(to top, #FFFBEA ${percentage - 75}%, transparent ${percentage - 75}%) 1`;
             }
         }
 
