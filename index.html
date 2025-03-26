@@ -2,18 +2,20 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1690, height=1080, initial-scale=1.0">
     <title>Sverigeklockan</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap'); /* Digitalt typsnitt */
+
         body {
-            background-color: #2E241E; /* Ännu mörkare beige */
+            background-color: #000000; /* Helt svart bakgrund */
             color: #FFFBEA; /* Ljusare gulaktig färg */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'VT323', monospace; /* Digital stil med punkter */
             position: relative;
             flex-direction: column;
         }
@@ -22,28 +24,10 @@
             font-weight: bold;
             z-index: 1;
         }
-        #loading-bar-container {
-            width: 85%; /* Lite längre */
-            height: 20px; /* Lite högre */
-            background-color: rgba(255, 251, 234, 0.3);
-            margin-top: 20px; /* Lite mer mellanrum från klockan */
-            position: relative;
-            border-radius: 10px; /* Ökad rundning för en snyggare effekt */
-            overflow: hidden;
-        }
-        #loading-bar {
-            height: 100%;
-            width: 0;
-            background-color: #FFFBEA;
-            transition: width 1s linear;
-        }
     </style>
 </head>
 <body>
     <div id="clock"></div>
-    <div id="loading-bar-container">
-        <div id="loading-bar"></div>
-    </div>
 
     <script>
         function updateClock() {
@@ -55,13 +39,6 @@
                 hour12: false
             };
             document.getElementById('clock').innerText = new Intl.DateTimeFormat('sv-SE', options).format(now);
-            updateLoadingBar(now.getSeconds());
-        }
-
-        function updateLoadingBar(seconds) {
-            const loadingBar = document.getElementById("loading-bar");
-            const percentage = (seconds / 60) * 100;
-            loadingBar.style.width = percentage + "%";
         }
 
         setInterval(updateClock, 1000);
