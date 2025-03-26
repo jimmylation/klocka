@@ -15,26 +15,35 @@
             margin: 0;
             font-family: Arial, sans-serif;
             position: relative;
+            flex-direction: column;
         }
         #clock {
             font-size: 80vh;
             font-weight: bold;
             z-index: 1;
         }
-        .border-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+        #loading-bar-container {
+            width: 80%;
+            height: 10px;
+            background-color: rgba(255, 251, 234, 0.3);
+            margin-top: 10px;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #loading-bar {
             height: 100%;
-            border: 5px solid transparent;
-            box-sizing: border-box;
+            width: 0;
+            background-color: #FFFBEA;
+            transition: width 1s linear;
         }
     </style>
 </head>
 <body>
     <div id="clock"></div>
-    <div class="border-line" id="border"></div>
+    <div id="loading-bar-container">
+        <div id="loading-bar"></div>
+    </div>
 
     <script>
         function updateClock() {
@@ -46,23 +55,13 @@
                 hour12: false
             };
             document.getElementById('clock').innerText = new Intl.DateTimeFormat('sv-SE', options).format(now);
-            updateBorder(now.getSeconds());
+            updateLoadingBar(now.getSeconds());
         }
 
-        function updateBorder(seconds) {
-            const borderElement = document.getElementById("border");
-            const totalSegments = 60;
-            const percentage = (seconds / totalSegments) * 100;
-            
-            if (seconds < 15) {
-                borderElement.style.borderImage = `linear-gradient(to right, #FFFBEA ${percentage}%, transparent ${percentage}%) 1`;
-            } else if (seconds < 30) {
-                borderElement.style.borderImage = `linear-gradient(to bottom, #FFFBEA ${percentage - 25}%, transparent ${percentage - 25}%) 1`;
-            } else if (seconds < 45) {
-                borderElement.style.borderImage = `linear-gradient(to left, #FFFBEA ${percentage - 50}%, transparent ${percentage - 50}%) 1`;
-            } else {
-                borderElement.style.borderImage = `linear-gradient(to top, #FFFBEA ${percentage - 75}%, transparent ${percentage - 75}%) 1`;
-            }
+        function updateLoadingBar(seconds) {
+            const loadingBar = document.getElementById("loading-bar");
+            const percentage = (seconds / 60) * 100;
+            loadingBar.style.width = percentage + "%";
         }
 
         setInterval(updateClock, 1000);
