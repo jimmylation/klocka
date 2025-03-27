@@ -2,10 +2,10 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1690, height=1080, initial-scale=1.0">
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
     <title>Sverigeklockan</title>
     <style>
-         body {
+        body {
             background-color: #000000; /* Helt svart bakgrund */
             color: #FFFBEA; /* Ljusare gulaktig färg */
             display: flex;
@@ -13,14 +13,16 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: Arial, sans-serif; /* Ursprungligt typsnitt */
             position: relative;
             flex-direction: column;
         }
         #clock {
-            font-size: 80vh;
+            font-size: 70vh; /* Justerat för att passa inom 1080p skärm med 88% bredd */
             font-weight: bold;
             z-index: 1;
+            width: 88%;
+            text-align: center;
         }
     </style>
 </head>
