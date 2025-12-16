@@ -1,71 +1,67 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Klocka</title>
-  <style>
-    *{ box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
-    body{ background:#000; overflow:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piteå Tidsklocka</title>
+    <style>
+        /* Grundläggande stil för helskärm och mörk bakgrund */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111; /* Nästan svart för mörker */
+            color: #00FFFF; /* Lugn cyan färg för texten (lågenergi) */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Täcker hela visningshöjden */
+            font-family: 'Arial Black', Gadget, sans-serif;
+            overflow: hidden; /* Förhindra scrollbars */
+        }
 
-    .panel{
-      position: fixed;
-      inset: 10px;
-      border-radius: 64px;
-
-      /* Fallback-ramar (tydliga även på “knepiga” skärmar) */
-      border: 10px solid rgba(240,250,255,.28);
-      outline: 4px solid rgba(0,0,0,.85);
-      outline-offset: -18px;
-
-      /* Enkel, mörk, mjuk bakgrund (inte för “smart”) */
-      background: #05080b;
-      box-shadow:
-        inset 0 0 0 2px rgba(255,255,255,.06),
-        0 30px 90px rgba(0,0,0,.75);
-
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-
-    .time{
-      color: rgba(240,250,255,.95);
-      font-weight: 850;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -0.05em;
-      line-height: 1;
-
-      /* Nästan heltäckande men alltid inom ramarna */
-      font-size: clamp(140px, 24vw, 420px);
-
-      text-shadow:
-        0 0 18px rgba(120, 220, 255, .16),
-        0 0 60px rgba(120, 220, 255, .08);
-    }
-  </style>
+        /* Stilen för själva klockan */
+        #clock {
+            font-size: 20vw; /* Väldigt stor text, anpassar sig efter skärmbredden */
+            letter-spacing: -0.05em; /* Justera avståndet mellan tecknen */
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Liten glödeffekt */
+            user-select: none; /* Förhindra att man kan markera texten */
+        }
+    </style>
 </head>
 <body>
-  <div class="panel">
-    <div class="time" id="time">--:--</div>
-  </div>
 
-  <script>
-    const TZ = "Europe/Stockholm";
-    const fmtTime = new Intl.DateTimeFormat("sv-SE", {
-      timeZone: TZ, hour: "2-digit", minute: "2-digit"
-    });
+    <div id="clock"></div>
 
-    const timeEl = document.getElementById("time");
+    <script>
+        function updateTime() {
+            // Skapa ett nytt Date-objekt.
+            const now = new Date();
 
-    function tick(){
-      const now = new Date();
-      timeEl.textContent = fmtTime.format(now);
-      const ms = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 20;
-      setTimeout(tick, ms);
-    }
-    tick();
-  </script>
+            // Använd toLocaleTimeString för att hantera svensk tidszon, 24h-format och sommar/vintertid.
+            // Piteå ligger i tidszonen "Europe/Stockholm".
+            const options = {
+                hour: '2-digit', // Timmar med noll framför (t.ex. 09)
+                minute: '2-digit', // Minuter med noll framför (t.ex. 05)
+                hour12: false, // 24-timmarsformat
+                timeZone: 'Europe/Stockholm'
+            };
+
+            // Vi får formatet "HH:MM"
+            const timeString = now.toLocaleTimeString('sv-SE', options);
+
+            // Uppdatera klockelementet
+            document.getElementById('clock').textContent = timeString;
+        }
+
+        // Kör funktionen direkt för att visa klockan direkt
+        updateTime();
+
+        // Uppdatera tiden varje minut (60 000 millisekunder)
+        // Detta är mer resurssnålt än att uppdatera varje sekund, vilket är vad du bad om ("Skippa sekunder")
+        // Vi kör det lite snabbare än en minut (t.ex. varje 30 sek) för att vara säker på att uppdateringen sker i början av varje ny minut.
+        setInterval(updateTime, 30000); 
+
+    </script>
 </body>
 </html>
