@@ -3,77 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piteå Tidsklocka - V2</title>
+    <title>Piteå Tidsklocka - Max</title>
     <style>
-        /* Grundstil för helskärm och mörk bakgrund */
+        /* Grundläggande stil för helskärm och mörk bakgrund */
         body {
             margin: 0;
             padding: 0;
-            background-color: #0A0A0A; /* Djupare nästan-svart */
-            color: #00FFFF; /* Lugn cyan färg */
+            background-color: #111; /* Nästan svart för mörker */
+            color: #00FFFF; /* Lugn cyan färg för texten (lågenergi) */
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            height: 100vh; /* Täcker hela visningshöjden */
             font-family: 'Arial Black', Gadget, sans-serif;
-            overflow: hidden;
+            overflow: hidden; /* Förhindra scrollbars */
             user-select: none;
         }
 
-        /* Wrapper för abstrakt ram och struktur */
-        .time-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 95%; /* Nästan heltäckande */
-            padding: 1vw; /* Lite inre luft */
-            /* En mycket diskret, tunn ram runt hela elementet */
-            border: 2px solid rgba(0, 255, 255, 0.2); 
-            border-radius: 5px;
-            box-sizing: border-box; /* Räkna in padding och border i bredden */
-        }
-
-        /* Klockans huvudstil */
+        /* Stilen för själva klockan */
         #clock {
-            font-size: 18vw; /* Fortfarande stor, men lämnar plats för ramen */
-            letter-spacing: -0.05em;
-            font-weight: 900;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.7); /* Lite starkare glöd */
-            margin-bottom: 20px; /* Utrymme ovanför linjen */
-        }
-
-        /* En abstrakt skiljelinje under klockan */
-        .divider {
-            width: 50%; /* Halva bredden av containern */
-            height: 4px;
-            background-color: #00FFFF;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
-            border-radius: 2px;
-            opacity: 0.8;
+            /* Ökad storlek för maximal täckning */
+            font-size: 25vw; 
+            /* Ökat teckenavstånd för att fylla ut mer */
+            letter-spacing: 0.02em; 
+            font-weight: 900; /* Extra fet text */
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.7); /* Tyngre glödeffekt */
         }
     </style>
 </head>
 <body>
 
-    <div class="time-wrapper">
-        <div id="clock"></div>
-        <div class="divider"></div>
-    </div>
+    <div id="clock"></div>
 
     <script>
         function updateTime() {
-            // Använder samma robusta metod som hanterar sommar- och vintertid automatiskt
             const now = new Date();
+
+            // Samma robusta inställningar för Sverige/Piteå (inkl. sommar/vintertid)
             const options = {
                 hour: '2-digit', 
                 minute: '2-digit', 
                 hour12: false,
-                timeZone: 'Europe/Stockholm' // Automatisk hantering av sommar/vintertid
+                timeZone: 'Europe/Stockholm'
             };
+
             const timeString = now.toLocaleTimeString('sv-SE', options);
             
-            // Uppdatera klockelementet
             document.getElementById('clock').textContent = timeString;
         }
 
