@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piteå Tidsklocka - Max</title>
+    <title>Piteå Tidsklocka - Komprimerad</title>
     <style>
         /* Grundläggande stil för helskärm och mörk bakgrund */
         body {
             margin: 0;
             padding: 0;
-            background-color: #111; /* Nästan svart för mörker */
-            color: #00FFFF; /* Lugn cyan färg för texten (lågenergi) */
+            background-color: #111; 
+            color: #00FFFF; 
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh; /* Täcker hela visningshöjden */
+            height: 100vh;
             font-family: 'Arial Black', Gadget, sans-serif;
             overflow: hidden; /* Förhindra scrollbars */
             user-select: none;
@@ -22,12 +22,12 @@
 
         /* Stilen för själva klockan */
         #clock {
-            /* Ökad storlek för maximal täckning */
+            /* Bibehållen höjd enligt önskemål */
             font-size: 35vw; 
-            /* Ökat teckenavstånd för att fylla ut mer */
-            letter-spacing: -0.03em; 
-            font-weight: 500; /* Extra fet text */
-            text-shadow: 0 0 35px rgba(0, 255, 255, 0.7); /* Tyngre glödeffekt */
+            /* Kraftigt negativt värde för att komprimera bredden */
+            letter-spacing: -0.1em; 
+            font-weight: 500;
+            text-shadow: 0 0 35px rgba(0, 255, 255, 0.7); 
         }
     </style>
 </head>
