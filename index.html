@@ -1,49 +1,167 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
-    <title>Sverigeklockan</title>
-    <style>
-        body {
-            background-color: #000000; /* Helt svart bakgrund */
-            color: #fff3b0; /* Mer kontrastrik varm ljusgul */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif; /* Ursprungligt typsnitt */
-            position: relative;
-            flex-direction: column;
-        }
-        #clock {
-            font-size: 65vh; /* Justerat för att passa inom 15:9-bildyta */
-            font-weight: bold;
-            z-index: 1;
-            width: 90vw;
-            text-align: center;
-            line-height: 1;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Klocka – Piteå</title>
+
+  <style>
+    :root{
+      --design-w: 1536;
+      --design-h: 1024;
+
+      --bg0: #04070a;
+      --bg1: #07131a;
+      --ink: #d8f4ff;
+      --muted: rgba(216,244,255,.72);
+
+      --glow: rgba(110, 210, 255, .16);
+      --glow2: rgba(120, 255, 195, .10);
+    }
+
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg0);
+      overflow: hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .viewport{
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(1200px 800px at 50% 45%, rgba(110,210,255,.10), transparent 60%),
+        radial-gradient(900px 600px at 50% 70%, rgba(120,255,195,.06), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+    }
+
+    .stage{
+      width: calc(var(--design-w) * 1px);
+      height: calc(var(--design-h) * 1px);
+      transform-origin: center;
+      position: relative;
+      will-change: transform;
+    }
+
+    .clock-wrap{
+      position: absolute;
+      inset: 22px;
+      border-radius: 52px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      box-shadow:
+        0 40px 120px rgba(0,0,0,.55),
+        0 0 120px var(--glow),
+        0 0 220px var(--glow2);
+      display: grid;
+      place-items: center;
+    }
+
+    .clock{
+      width: 94%;
+      display: grid;
+      gap: 22px;
+      justify-items: center;
+      text-align: center;
+      color: var(--ink);
+      animation: drift 18s ease-in-out infinite;
+    }
+
+    @keyframes drift{
+      0%   { transform: translate(0px, 0px); }
+      50%  { transform: translate(6px, -5px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
+    .time{
+      font-weight: 850;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      font-size: 240px;
+      text-shadow:
+        0 0 18px rgba(110,210,255,.18),
+        0 0 55px rgba(110,210,255,.10);
+      filter: saturate(0.95);
+    }
+
+    .date{
+      font-size: 48px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 24px rgba(110,210,255,.08);
+    }
+
+    .hint{
+      position: absolute;
+      bottom: 26px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 28px;
+      color: rgba(216,244,255,.38);
+      letter-spacing: 0.06em;
+    }
+  </style>
 </head>
+
 <body>
-    <div id="clock"></div>
+  <div class="viewport">
+    <div class="stage" id="stage">
+      <div class="clock-wrap">
+        <div class="clock">
+          <div id="time" class="time">--:--</div>
+          <div id="date" class="date">—</div>
+        </div>
+        <div class="hint">Piteå • Sverige (Europe/Stockholm)</div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        function updateClock() {
-            const now = new Date();
-            const options = {
-                timeZone: 'Europe/Stockholm',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            };
-            document.getElementById('clock').innerText = new Intl.DateTimeFormat('sv-SE', options).format(now);
-        }
+  <script>
+    // Fit-to-screen (behåller rätt format)
+    const DESIGN_W = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--design-w'));
+    const DESIGN_H = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--design-h'));
+    const stage = document.getElementById('stage');
 
-        setInterval(updateClock, 1000);
-        updateClock();
-    </script>
+    function fit(){
+      const scale = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
+      stage.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', fit, { passive: true });
+    fit();
+
+    // Klocka: tvinga tidszon till Europe/Stockholm (sommar/vintertid hanteras automatiskt)
+    const TZ = "Europe/Stockholm";
+    const timeEl = document.getElementById('time');
+    const dateEl = document.getElementById('date');
+
+    const fmtTime = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: TZ,
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const fmtDate = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: TZ,
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    function capFirst(s){ return s ? (s[0].toUpperCase() + s.slice(1)) : s; }
+
+    function tick(){
+      const now = new Date();
+      timeEl.textContent = fmtTime.format(now);
+      dateEl.textContent = capFirst(fmtDate.format(now));
+
+      // Uppdatera exakt vid nästa minutskifte för stabil signage
+      const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 10;
+      setTimeout(tick, msToNextMinute);
+    }
+    tick();
+  </script>
 </body>
 </html>
