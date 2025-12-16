@@ -4,162 +4,112 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Klocka – Piteå</title>
-
   <style>
-    :root{
-      --design-w: 1536;
-      --design-h: 1024;
-
-      --bg0: #04070a;
-      --bg1: #07131a;
-      --ink: #d8f4ff;
-      --muted: rgba(216,244,255,.72);
-
-      --glow: rgba(110, 210, 255, .16);
-      --glow2: rgba(120, 255, 195, .10);
-    }
-
+    *{ box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
-    body {
-      background: var(--bg0);
+
+    body{
+      /* Totalt mörker runtom */
+      background: #000;
       overflow: hidden;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    .viewport{
+    /* Nästan heltäckande panel */
+    .panel{
       position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
+      inset: 18px;                 /* ändra till t.ex. 8px om du vill ha ännu mer heltäckande */
+      border-radius: 56px;         /* tydligt rundade hörn */
+      border: 6px solid rgba(220, 245, 255, 0.22); /* synlig ram även i mörker */
+
+      /* Abstrakt men enkel bakgrund (mörk och mjuk) */
       background:
-        radial-gradient(1200px 800px at 50% 45%, rgba(110,210,255,.10), transparent 60%),
-        radial-gradient(900px 600px at 50% 70%, rgba(120,255,195,.06), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
-    }
+        radial-gradient(1200px 800px at 30% 35%, rgba(90, 210, 255, 0.16), transparent 60%),
+        radial-gradient(900px 650px at 70% 70%, rgba(130, 255, 200, 0.10), transparent 60%),
+        linear-gradient(180deg, #061018, #03070b);
 
-    .stage{
-      width: calc(var(--design-w) * 1px);
-      height: calc(var(--design-h) * 1px);
-      transform-origin: center;
-      position: relative;
-      will-change: transform;
-    }
-
-    .clock-wrap{
-      position: absolute;
-      inset: 22px;
-      border-radius: 52px;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.06);
+      /* lite djup men inte “flashigt” */
       box-shadow:
-        0 40px 120px rgba(0,0,0,.55),
-        0 0 120px var(--glow),
-        0 0 220px var(--glow2);
+        0 30px 90px rgba(0,0,0,0.65),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+
       display: grid;
       place-items: center;
+      padding: 40px;
     }
 
     .clock{
-      width: 94%;
-      display: grid;
-      gap: 22px;
-      justify-items: center;
       text-align: center;
-      color: var(--ink);
-      animation: drift 18s ease-in-out infinite;
-    }
-
-    @keyframes drift{
-      0%   { transform: translate(0px, 0px); }
-      50%  { transform: translate(6px, -5px); }
-      100% { transform: translate(0px, 0px); }
+      color: rgba(220, 245, 255, 0.95);
+      width: 100%;
     }
 
     .time{
-      font-weight: 850;
-      letter-spacing: -0.03em;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.04em;
       line-height: 0.95;
-      font-size: 240px;
+
+      /* Stor men responsiv utan krångel */
+      font-size: clamp(120px, 18vw, 320px);
+
+      /* Mjuk glöd – inte bländande */
       text-shadow:
-        0 0 18px rgba(110,210,255,.18),
-        0 0 55px rgba(110,210,255,.10);
-      filter: saturate(0.95);
+        0 0 18px rgba(90, 210, 255, 0.18),
+        0 0 60px rgba(90, 210, 255, 0.08);
     }
 
     .date{
-      font-size: 48px;
-      color: var(--muted);
+      margin-top: 16px;
+      font-size: clamp(24px, 3.2vw, 54px);
+      color: rgba(220,245,255,0.72);
       letter-spacing: 0.02em;
-      text-shadow: 0 0 24px rgba(110,210,255,.08);
+      text-shadow: 0 0 30px rgba(130,255,200,0.06);
     }
 
-    .hint{
-      position: absolute;
-      bottom: 26px;
-      left: 0; right: 0;
-      text-align: center;
-      font-size: 28px;
-      color: rgba(216,244,255,.38);
-      letter-spacing: 0.06em;
+    .place{
+      margin-top: 10px;
+      font-size: clamp(18px, 2.2vw, 34px);
+      color: rgba(220,245,255,0.38);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
   </style>
 </head>
-
 <body>
-  <div class="viewport">
-    <div class="stage" id="stage">
-      <div class="clock-wrap">
-        <div class="clock">
-          <div id="time" class="time">--:--</div>
-          <div id="date" class="date">—</div>
-        </div>
-        <div class="hint">Piteå • Sverige (Europe/Stockholm)</div>
-      </div>
+  <div class="panel">
+    <div class="clock">
+      <div class="time" id="time">--:--</div>
+      <div class="date" id="date">—</div>
+      <div class="place">Piteå • Sverige</div>
     </div>
   </div>
 
   <script>
-    // Fit-to-screen (behåller rätt format)
-    const DESIGN_W = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--design-w'));
-    const DESIGN_H = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--design-h'));
-    const stage = document.getElementById('stage');
-
-    function fit(){
-      const scale = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
-      stage.style.transform = `scale(${scale})`;
-    }
-    window.addEventListener('resize', fit, { passive: true });
-    fit();
-
-    // Klocka: tvinga tidszon till Europe/Stockholm (sommar/vintertid hanteras automatiskt)
+    // Enda scriptet: uppdatera tid (DST/ sommar-vintertid via Europe/Stockholm)
     const TZ = "Europe/Stockholm";
-    const timeEl = document.getElementById('time');
-    const dateEl = document.getElementById('date');
 
-    const fmtTime = new Intl.DateTimeFormat('sv-SE', {
-      timeZone: TZ,
-      hour: '2-digit',
-      minute: '2-digit'
+    const fmtTime = new Intl.DateTimeFormat("sv-SE", {
+      timeZone: TZ, hour: "2-digit", minute: "2-digit"
     });
 
-    const fmtDate = new Intl.DateTimeFormat('sv-SE', {
-      timeZone: TZ,
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    const fmtDate = new Intl.DateTimeFormat("sv-SE", {
+      timeZone: TZ, weekday: "long", year: "numeric", month: "long", day: "numeric"
     });
 
-    function capFirst(s){ return s ? (s[0].toUpperCase() + s.slice(1)) : s; }
+    const timeEl = document.getElementById("time");
+    const dateEl = document.getElementById("date");
+
+    const cap = s => s ? (s[0].toUpperCase() + s.slice(1)) : s;
 
     function tick(){
       const now = new Date();
       timeEl.textContent = fmtTime.format(now);
-      dateEl.textContent = capFirst(fmtDate.format(now));
+      dateEl.textContent = cap(fmtDate.format(now));
 
-      // Uppdatera exakt vid nästa minutskifte för stabil signage
-      const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 10;
-      setTimeout(tick, msToNextMinute);
+      // kör om precis efter nästa minutskifte
+      const ms = (60 - now.getSeconds()) * 1000 - now.getMilliseconds() + 20;
+      setTimeout(tick, ms);
     }
     tick();
   </script>
